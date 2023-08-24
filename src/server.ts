@@ -46,3 +46,67 @@ async function connectToDBAndStartListening() {
         );
     });
 }
+
+app.post("/expenses", async (req, res) => {
+    try {
+        const { payee, cat_id, memo, type, amount } = req.body;
+        const text =
+            "INSERT INTO expense (payee, cat_id, memo, type, amount) values ($1, $2, $3, $4, $5)";
+        const values = [payee, cat_id, memo, type, amount];
+        const newExpense = await client.query(text, values);
+        res.status(200).json(newExpense);
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post("/budget", async (req, res) => {
+    try {
+        const { cat_id, month, budgeted, spent } = req.body;
+        const text =
+            "INSERT INTO budget (cat_id, month, budgeted, spent) values ($1, $2, $3, $4)";
+        const values = [cat_id, month, budgeted, spent];
+        const newBudget = await client.query(text, values);
+        res.status(200).json(newBudget);
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+app.get("/budget/:month", async (req, res) => {
+    try {
+        const month = req.params.month;
+        console.log(month);
+        const text = "SELECT * FROM budget WHERE month = $1";
+        const values = [month];
+        const monthsBudget = await client.query(text, values);
+        res.status(200).json(monthsBudget.rows);
+        console.log(monthsBudget.rows);
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+app.get("/expenses", async (req, res) => {
+    try {
+        const text = "SELECT * FROM expense";
+        const expenses = await client.query(text);
+        res.status(200).json(expenses.rows);
+        console.log(expenses.rows);
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+app.get("/expenses/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const text = "SELECT * FROM expense WHERE id = $1";
+        const values = [id];
+        const expenses = await client.query(text, values);
+        res.status(200).json(expenses.rows);
+        console.log(expenses.rows);
+    } catch (error) {
+        console.error(error);
+    }
+});
