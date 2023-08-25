@@ -110,3 +110,14 @@ app.get("/expenses/:id", async (req, res) => {
         console.error(error);
     }
 });
+
+app.get("/categories", async (req, res) => {
+    try {
+        const text = "SELECT cat_id, name, section FROM category";
+        const categories = await client.query(text);
+        res.status(200).json(categories.rows);
+        console.log(categories.rows);
+    } catch (error) {
+        console.error(error);
+    }
+});
